@@ -15,8 +15,9 @@ For workstations and dev machines, this simplifies the configuration process. Yo
 
 Because you should never have to manually edit the geck repo, it is encrypted using pbkdf2 by default using a password that you specify.
 
-Envisioned usage:
+## Envisioned usage:
 
+### Repository Management
 ```shell
 geck init|clone https://github.com/foo/bar
 
@@ -28,6 +29,7 @@ geck clone will create a new local repo by cloning the specified upstream.
 
 geck set will configure geck to use a previously cloned geck repo for its configuration data
 
+### Resource Management
 ```shell
 geck file|user|group|plugin|<plugin> add|remove
 ```
@@ -47,7 +49,7 @@ geck group add bar
 ```
 Geck adds the given group to a list of groups, which it syncs from /etc/group.
 
-
+### Deployment
 ```shell
 geck read|write|log|show
 ```
