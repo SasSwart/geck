@@ -63,3 +63,7 @@ Geck iterates through the resources it was told to care about and ensures that i
 geck write
 ```
 Geck deploys the resources it knows about to your system.
+
+## Useful Resources
+
+* [git2go tutorial](https://blog.gopheracademy.com/advent-2014/git2go-tutorial/)
