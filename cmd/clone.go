@@ -23,17 +23,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var publicKeyPath, privateKeyPath, repo, path, branch string
+
 // cloneCmd represents the clone command
 var cloneCmd = &cobra.Command{
 	Use:   "clone",
 	Short: "Initialise a geck repository by cloning an upstream repository",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		repo := cmd.Flag("repo").Value.String()
-		path := cmd.Flag("path").Value.String()
-		branch := cmd.Flag("branch").Value.String()
-
-		_, err := git.Clone(repo, path, branch)
+		_, err := git.Clone(repo, path, branch, git.SSHCredential{
+			PublicKeyPath:  publicKeyPath,
+			PrivateKeyPath: privateKeyPath,
+			// TODO: Support ssh key passphrase
+		})
 
 		if err != nil {
 			fmt.Println("Could not clone git repository")
@@ -45,8 +47,9 @@ var cloneCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(cloneCmd)
-
-	cloneCmd.Flags().StringP("repo", "r", "", "The remote git repository to clone")
-	cloneCmd.Flags().StringP("path", "p", "./", "The local path to which to clone the remote git repository")
-	cloneCmd.Flags().StringP("branch", "b", "main", "Which branch of the remote repository to clone")
+	cloneCmd.Flags().StringVar(&publicKeyPath, "public-key-path", "~/.ssh/id_rsa.pub", "The path to your ssh public key")
+	cloneCmd.Flags().StringVar(&privateKeyPath, "private-key-path", "~/.ssh/id_rsa", "The path to your ssh private key")
+	cloneCmd.Flags().StringVarP(&repo, "repo", "r", "", "The remote git repository to clone")
+	cloneCmd.Flags().StringVarP(&path, "path", "p", "./", "The local path to which to clone the remote git repository")
+	cloneCmd.Flags().StringVarP(&branch, "branch", "b", "main", "Which branch of the remote repository to clone")
 }

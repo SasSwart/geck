@@ -2,10 +2,10 @@ package git
 
 import git "github.com/libgit2/git2go/v33"
 
-func Clone(repo, branch, path string) (*git.Repository, error) {
+func Clone(repo, path, branch string, sshCredential SSHCredential) (*git.Repository, error) {
 	callbacks := git.RemoteCallbacks{
 		CertificateCheckCallback: CertificateCheckCallback,
-		CredentialsCallback:      credentialsCallback,
+		CredentialsCallback:      sshCredential.GetCallback(),
 	}
 	return git.Clone(repo, path, &git.CloneOptions{
 		CheckoutBranch: branch,
