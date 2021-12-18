@@ -13,10 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package main
+package cmd
 
-import "github.com/sasswart/geck/cmd"
+import (
+	"github.com/spf13/cobra"
+)
 
-func main() {
-	cmd.NewGeck().Execute()
+// adds a resource to the system state watchlist
+func newAddCommand() *cobra.Command {
+	addCmd := &cobra.Command{
+		Use:   "add",
+		Short: "Add a resource to the system state watchlist.",
+	}
+
+	addCmd.AddCommand(newAddFileCommand())
+
+	return addCmd
 }

@@ -19,13 +19,11 @@ Because you should never have to manually edit the geck repo, it is encrypted us
 
 ### Repository Management
 ```shell
-geck init|set ~/geck/ 
+geck init ~/geck/ 
 geck clone ~/geck/ https://github.com/foo/bar
 ```
 geck init creates a new local geck repo. If the specified directory does not exist, it will be created.
 If the specified directory exists and is not empty, geck will refuse to use it.
-
-geck set configures geck to use an existing directory as its geck repo
 
 geck clone will create a new local repo by cloning the specified upstream.
 

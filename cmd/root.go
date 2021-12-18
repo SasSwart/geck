@@ -24,35 +24,41 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+type Geck struct {
+	rootCmd *cobra.Command
+}
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "geck",
-	Short: "An easy to use git based dotfile manager",
-	Long: `A configuration management tool for workstations that tracks the files and resources
-that you care about; so that you don't have to write yaml and deploy it before seeing results.`,
+func NewGeck() Geck {
+	cobra.OnInitialize(initConfig)
+	return Geck{
+		rootCmd: newRootCommand(),
+	}
+}
+
+func newRootCommand() *cobra.Command {
+	rootCmd := &cobra.Command{
+		Use:   "geck",
+		Short: "An easy to use git based dotfile manager",
+		Long: `A configuration management tool for workstations that tracks the files and resources
+	that you care about; so that you don't have to write yaml and deploy it before seeing results.`,
+	}
+
+	rootCmd.AddCommand(newCloneCommand())
+	rootCmd.AddCommand(newAddCommand())
+	rootCmd.AddCommand(newRemoveCommand())
+
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "./", "The path to the geck config file")
+
+	return rootCmd
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	cobra.CheckErr(rootCmd.Execute())
+func (g Geck) Execute() {
+	cobra.CheckErr(g.rootCmd.Execute())
 }
 
-func init() {
-	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.geck.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
+var cfgFile, path string
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {

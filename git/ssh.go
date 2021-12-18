@@ -1,9 +1,18 @@
 package git
 
-import git "github.com/libgit2/git2go/v33"
+import (
+	"fmt"
+
+	git "github.com/libgit2/git2go/v33"
+)
 
 func CertificateCheckCallback(cert *git.Certificate, valid bool, hostname string) error {
-	return nil //git.CertificateCheckCallback(cert, valid, hostname)
+	if cert.Kind == git.CertificateHostkey {
+		fmt.Println(cert.Hostkey)
+	} else if cert.Kind == git.CertificateX509 {
+		fmt.Println(cert.X509)
+	}
+	return nil
 }
 
 type SSHCredential struct {
