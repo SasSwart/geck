@@ -1,4 +1,5 @@
 # Backlog
+## Todo
 - Configure system state watchlist
 - Sync system state to folder
 - Sync system state from folder
@@ -7,3 +8,4 @@
 - Clone SSH repos securely
 - Clone HTTPS repos securely
 - Encrypted storage
+# Done

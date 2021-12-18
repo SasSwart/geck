@@ -24,12 +24,20 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Execute the given Geck command
+func Execute() {
+	cobra.CheckErr(geckSingleton.rootCmd.Execute())
+}
+
 type Geck struct {
 	rootCmd *cobra.Command
 }
 
-func NewGeck() Geck {
-	cobra.OnInitialize(initConfig)
+var geckSingleton = newGeck()
+
+// Initialise an instance of the Geck struct
+// that contains the root Cobra command of the Geck CLI interface
+func newGeck() Geck {
 	return Geck{
 		rootCmd: newRootCommand(),
 	}
@@ -43,43 +51,40 @@ func newRootCommand() *cobra.Command {
 	that you care about; so that you don't have to write yaml and deploy it before seeing results.`,
 	}
 
+	var cfgFile string
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "./", "The path to the geck config file")
+
+	cobra.OnInitialize(initConfig(cfgFile))
+
 	rootCmd.AddCommand(newCloneCommand())
 	rootCmd.AddCommand(newAddCommand())
 	rootCmd.AddCommand(newRemoveCommand())
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "./", "The path to the geck config file")
-
 	return rootCmd
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func (g Geck) Execute() {
-	cobra.CheckErr(g.rootCmd.Execute())
-}
-
-var cfgFile, path string
-
 // initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
+func initConfig(cfgFile string) func() {
+	return func() {
+		if cfgFile != "" {
+			// Use config file from the flag.
+			viper.SetConfigFile(cfgFile)
+		} else {
+			// Find home directory.
+			home, err := os.UserHomeDir()
+			cobra.CheckErr(err)
 
-		// Search config in home directory with name ".geck" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".geck")
-	}
+			// Search config in home directory with name ".geck" (without extension).
+			viper.AddConfigPath(home)
+			viper.SetConfigType("yaml")
+			viper.SetConfigName(".geck")
+		}
 
-	viper.AutomaticEnv() // read in environment variables that match
+		viper.AutomaticEnv() // read in environment variables that match
 
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		// If a config file is found, read it in.
+		if err := viper.ReadInConfig(); err == nil {
+			fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		}
 	}
 }

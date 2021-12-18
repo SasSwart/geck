@@ -18,5 +18,5 @@ package main
 import "github.com/sasswart/geck/cmd"
 
 func main() {
-	cmd.NewGeck().Execute()
+	cmd.Execute()
 }

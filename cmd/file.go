@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+Copyright © 2021 Sas Swart sasswartcdk@protonmail.com
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,39 +22,32 @@ import (
 )
 
 func newAddFileCommand() *cobra.Command {
-	// fileCmd represents the file command
+	var path string
+
 	addFileCmd := &cobra.Command{
 		Use:   "file",
-		Short: "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Short: "Add a file to the system state watchlist",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("add file called")
+			fmt.Println("Adding " + path + " to the system state watchlist")
 		},
 	}
+
+	addFileCmd.Flags().StringVar(&path, "path", "", "The path to the file that you would like to track")
 
 	return addFileCmd
 }
 
 func newRemoveFileCommand() *cobra.Command {
-	// fileCmd represents the file command
+	var path string
+
 	removeFileCmd := &cobra.Command{
 		Use:   "file",
-		Short: "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-	and usage of using your command. For example:
-	
-	Cobra is a CLI library for Go that empowers applications.
-	This application is a tool to generate the needed files
-	to quickly create a Cobra application.`,
+		Short: "Remove a file from the system state watchlist",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("remove file called")
+			fmt.Println("Removing " + path + " from the system state watchlist")
 		},
 	}
+	removeFileCmd.Flags().StringVar(&path, "path", "", "The path to the file that you would like to track")
 
 	return removeFileCmd
 }

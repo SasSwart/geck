@@ -23,16 +23,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var publicKeyPath, privateKeyPath, repo, branch string
-
 // cloneCmd represents the clone command
 func newCloneCommand() *cobra.Command {
+	var repoPath, publicKeyPath, privateKeyPath, repo, branch string
+
 	cloneCmd := &cobra.Command{
 		Use:   "clone",
 		Short: "Initialise a geck repository by cloning an upstream repository",
 		Long:  ``,
 		Run: func(cmd *cobra.Command, args []string) {
-			_, err := git.Clone(repo, path, branch, git.SSHCredential{
+			_, err := git.Clone(repo, repoPath, branch, git.SSHCredential{
 				PublicKeyPath:  publicKeyPath,
 				PrivateKeyPath: privateKeyPath,
 			})
