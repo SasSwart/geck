@@ -24,56 +24,67 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
-
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "geck",
-	Short: "An easy to use git based dotfile manager",
-	Long: `A configuration management tool for workstations that tracks the files and resources
-that you care about; so that you don't have to write yaml and deploy it before seeing results.`,
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+// Execute the given Geck command
 func Execute() {
-	cobra.CheckErr(rootCmd.Execute())
+	cobra.CheckErr(geckSingleton.rootCmd.Execute())
 }
 
-func init() {
-	cobra.OnInitialize(initConfig)
+type Geck struct {
+	rootCmd *cobra.Command
+}
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+var geckSingleton = newGeck()
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.geck.yaml)")
+// Initialise an instance of the Geck struct
+// that contains the root Cobra command of the Geck CLI interface
+func newGeck() Geck {
+	return Geck{
+		rootCmd: newRootCommand(),
+	}
+}
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+func newRootCommand() *cobra.Command {
+	rootCmd := &cobra.Command{
+		Use:   "geck",
+		Short: "An easy to use git based dotfile manager",
+		Long: `A configuration management tool for workstations that tracks the files and resources
+	that you care about; so that you don't have to write yaml and deploy it before seeing results.`,
+	}
+
+	var cfgFile string
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "./", "The path to the geck config file")
+
+	cobra.OnInitialize(initConfig(cfgFile))
+
+	rootCmd.AddCommand(newCloneCommand())
+	rootCmd.AddCommand(newAddCommand())
+	rootCmd.AddCommand(newRemoveCommand())
+
+	return rootCmd
 }
 
 // initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
+func initConfig(cfgFile string) func() {
+	return func() {
+		if cfgFile != "" {
+			// Use config file from the flag.
+			viper.SetConfigFile(cfgFile)
+		} else {
+			// Find home directory.
+			home, err := os.UserHomeDir()
+			cobra.CheckErr(err)
 
-		// Search config in home directory with name ".geck" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".geck")
-	}
+			// Search config in home directory with name ".geck" (without extension).
+			viper.AddConfigPath(home)
+			viper.SetConfigType("yaml")
+			viper.SetConfigName(".geck")
+		}
 
-	viper.AutomaticEnv() // read in environment variables that match
+		viper.AutomaticEnv() // read in environment variables that match
 
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		// If a config file is found, read it in.
+		if err := viper.ReadInConfig(); err == nil {
+			fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		}
 	}
 }
